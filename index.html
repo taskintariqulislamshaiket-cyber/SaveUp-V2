@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
-<!-- Updated with Quiz Feature -->
-<html lang="en">
+<!-- SaveUp V2 - Complete Working Version -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -23,7 +21,151 @@
     const { useState, useEffect } = React;
 
     // ========================================
-    // DATA & STATE MANAGEMENT
+    // QUIZ DATA - OUTSIDE APP COMPONENT
+    // ========================================
+    
+    const quizQuestions = [
+      {
+        q: "When you receive your salary, you:",
+        options: [
+          { text: "Immediately transfer 20%+ to savings", type: "Lion" },
+          { text: "Budget carefully and track every taka", type: "Fox" },
+          { text: "Treat yourself first, save what's left", type: "Unicorn" },
+          { text: "Spend on what I need right now", type: "Dragon" }
+        ]
+      },
+      {
+        q: "Your friend invites you to an expensive restaurant:",
+        options: [
+          { text: "Check my budget first before deciding", type: "Fox" },
+          { text: "Go but order budget-friendly items", type: "Lion" },
+          { text: "Absolutely! Life is short!", type: "Unicorn" },
+          { text: "Say yes, worry about cost later", type: "Dragon" }
+        ]
+      },
+      {
+        q: "You see a sale on something you want:",
+        options: [
+          { text: "Wait 48 hours to decide if I really need it", type: "Fox" },
+          { text: "Only buy if it was already in my budget", type: "Lion" },
+          { text: "Buy it! It's on sale, I'm saving money!", type: "Dragon" },
+          { text: "Buy it if it makes me happy", type: "Unicorn" }
+        ]
+      },
+      {
+        q: "Your approach to financial goals:",
+        options: [
+          { text: "I have specific goals with timelines", type: "Lion" },
+          { text: "I plan everything in detail", type: "Fox" },
+          { text: "Goals? I prefer to live in the moment", type: "Unicorn" },
+          { text: "I'll save when I have extra money", type: "Dragon" }
+        ]
+      },
+      {
+        q: "When you're stressed, you:",
+        options: [
+          { text: "Review my finances to feel in control", type: "Fox" },
+          { text: "Stick to my savings routine", type: "Lion" },
+          { text: "Treat myself to feel better", type: "Unicorn" },
+          { text: "Buy something to cheer up", type: "Dragon" }
+        ]
+      },
+      {
+        q: "Your savings account:",
+        options: [
+          { text: "Growing steadily, I contribute regularly", type: "Lion" },
+          { text: "Optimized across multiple accounts", type: "Fox" },
+          { text: "Exists, but not a priority right now", type: "Unicorn" },
+          { text: "What savings account?", type: "Dragon" }
+        ]
+      },
+      {
+        q: "Before making a big purchase:",
+        options: [
+          { text: "Research extensively, compare prices", type: "Fox" },
+          { text: "Check if I have saved for it", type: "Lion" },
+          { text: "If I want it and can afford it, I buy it", type: "Unicorn" },
+          { text: "Buy now, figure out payment later", type: "Dragon" }
+        ]
+      },
+      {
+        q: "Your financial tracking:",
+        options: [
+          { text: "Every expense tracked in detail", type: "Fox" },
+          { text: "Weekly check-ins to stay on target", type: "Lion" },
+          { text: "Occasionally review bank statements", type: "Unicorn" },
+          { text: "I roughly know where my money goes", type: "Dragon" }
+        ]
+      },
+      {
+        q: "You find ৳5,000 extra this month:",
+        options: [
+          { text: "Straight to savings or investment", type: "Lion" },
+          { text: "Divide between savings, fun, and buffer", type: "Fox" },
+          { text: "Treat myself to something special!", type: "Unicorn" },
+          { text: "Finally! Something I've been wanting", type: "Dragon" }
+        ]
+      },
+      {
+        q: "Your relationship with money is:",
+        options: [
+          { text: "A tool for building wealth and security", type: "Lion" },
+          { text: "Something to be managed wisely", type: "Fox" },
+          { text: "For enjoying life and experiences", type: "Unicorn" },
+          { text: "Stressful - never enough of it", type: "Dragon" }
+        ]
+      }
+    ];
+
+    const personalities = {
+      Lion: {
+        emoji: "🦁",
+        name: "Money Lion",
+        description: "The Disciplined Saver",
+        traits: [
+          "You prioritize savings above all else",
+          "Strong willpower and financial discipline",
+          "Clear goals and consistent habits",
+          "Risk-averse but building wealth steadily"
+        ]
+      },
+      Fox: {
+        emoji: "🦊",
+        name: "Savvy Fox",
+        description: "The Strategic Planner",
+        traits: [
+          "You optimize every financial decision",
+          "Love researching and comparing options",
+          "Multiple budgets and tracking systems",
+          "Balance between saving and smart spending"
+        ]
+      },
+      Unicorn: {
+        emoji: "🦄",
+        name: "YOLO Unicorn",
+        description: "The Experience Seeker",
+        traits: [
+          "You value experiences over savings",
+          "Live in the moment philosophy",
+          "Willing to spend on what brings joy",
+          "Less worried about the future"
+        ]
+      },
+      Dragon: {
+        emoji: "🐉",
+        name: "Impulsive Dragon",
+        description: "The Spontaneous Spender",
+        traits: [
+          "You struggle with impulse control",
+          "Buy now, worry later mentality",
+          "Emotional spending when stressed",
+          "Need support to build better habits"
+        ]
+      }
+    };
+
+    // ========================================
+    // MAIN APP COMPONENT
     // ========================================
     
     const App = () => {
@@ -31,13 +173,14 @@
       const [showExpenseModal, setShowExpenseModal] = useState(false);
       const [currentPage, setCurrentPage] = useState('dashboard');
       const [totalBudget, setTotalBudget] = useState(50000);
-      // Money Personality Quiz State
-const [showQuiz, setShowQuiz] = useState(() => {
-  return !localStorage.getItem('saveup_personality');
-});
-const [personality, setPersonality] = useState(() => {
-  return localStorage.getItem('saveup_personality') || null;
-});
+      
+      // Quiz state
+      const [showQuiz, setShowQuiz] = useState(() => {
+        return !localStorage.getItem('saveup_personality');
+      });
+      const [personality, setPersonality] = useState(() => {
+        return localStorage.getItem('saveup_personality') || null;
+      });
       
       // Load expenses from localStorage
       useEffect(() => {
@@ -72,149 +215,7 @@ const [personality, setPersonality] = useState(() => {
       
       const remaining = totalBudget - thisMonthSpent;
       const healthScore = Math.max(0, Math.min(1000, Math.round((remaining / totalBudget) * 1000)));
-      // ========================================
-// MONEY PERSONALITY QUIZ DATA
-// ========================================
-
-const quizQuestions = [
-  {
-    q: "When you receive your salary, you:",
-    options: [
-      { text: "Immediately transfer 20%+ to savings", type: "Lion" },
-      { text: "Budget carefully and track every taka", type: "Fox" },
-      { text: "Treat yourself first, save what's left", type: "Unicorn" },
-      { text: "Spend on what I need right now", type: "Dragon" }
-    ]
-  },
-  {
-    q: "Your friend invites you to an expensive restaurant:",
-    options: [
-      { text: "Check my budget first before deciding", type: "Fox" },
-      { text: "Go but order budget-friendly items", type: "Lion" },
-      { text: "Absolutely! Life is short!", type: "Unicorn" },
-      { text: "Say yes, worry about cost later", type: "Dragon" }
-    ]
-  },
-  {
-    q: "You see a sale on something you want:",
-    options: [
-      { text: "Wait 48 hours to decide if I really need it", type: "Fox" },
-      { text: "Only buy if it was already in my budget", type: "Lion" },
-      { text: "Buy it! It's on sale, I'm saving money!", type: "Dragon" },
-      { text: "Buy it if it makes me happy", type: "Unicorn" }
-    ]
-  },
-  {
-    q: "Your approach to financial goals:",
-    options: [
-      { text: "I have specific goals with timelines", type: "Lion" },
-      { text: "I plan everything in detail", type: "Fox" },
-      { text: "Goals? I prefer to live in the moment", type: "Unicorn" },
-      { text: "I'll save when I have extra money", type: "Dragon" }
-    ]
-  },
-  {
-    q: "When you're stressed, you:",
-    options: [
-      { text: "Review my finances to feel in control", type: "Fox" },
-      { text: "Stick to my savings routine", type: "Lion" },
-      { text: "Treat myself to feel better", type: "Unicorn" },
-      { text: "Buy something to cheer up", type: "Dragon" }
-    ]
-  },
-  {
-    q: "Your savings account:",
-    options: [
-      { text: "Growing steadily, I contribute regularly", type: "Lion" },
-      { text: "Optimized across multiple accounts", type: "Fox" },
-      { text: "Exists, but not a priority right now", type: "Unicorn" },
-      { text: "What savings account?", type: "Dragon" }
-    ]
-  },
-  {
-    q: "Before making a big purchase:",
-    options: [
-      { text: "Research extensively, compare prices", type: "Fox" },
-      { text: "Check if I have saved for it", type: "Lion" },
-      { text: "If I want it and can afford it, I buy it", type: "Unicorn" },
-      { text: "Buy now, figure out payment later", type: "Dragon" }
-    ]
-  },
-  {
-    q: "Your financial tracking:",
-    options: [
-      { text: "Every expense tracked in detail", type: "Fox" },
-      { text: "Weekly check-ins to stay on target", type: "Lion" },
-      { text: "Occasionally review bank statements", type: "Unicorn" },
-      { text: "I roughly know where my money goes", type: "Dragon" }
-    ]
-  },
-  {
-    q: "You find ৳5,000 extra this month:",
-    options: [
-      { text: "Straight to savings or investment", type: "Lion" },
-      { text: "Divide between savings, fun, and buffer", type: "Fox" },
-      { text: "Treat myself to something special!", type: "Unicorn" },
-      { text: "Finally! Something I've been wanting", type: "Dragon" }
-    ]
-  },
-  {
-    q: "Your relationship with money is:",
-    options: [
-      { text: "A tool for building wealth and security", type: "Lion" },
-      { text: "Something to be managed wisely", type: "Fox" },
-      { text: "For enjoying life and experiences", type: "Unicorn" },
-      { text: "Stressful - never enough of it", type: "Dragon" }
-    ]
-  }
-];
-
-const personalities = {
-  Lion: {
-    emoji: "🦁",
-    name: "Money Lion",
-    description: "The Disciplined Saver",
-    traits: [
-      "You prioritize savings above all else",
-      "Strong willpower and financial discipline",
-      "Clear goals and consistent habits",
-      "Risk-averse but building wealth steadily"
-    ]
-  },
-  Fox: {
-    emoji: "🦊",
-    name: "Savvy Fox",
-    description: "The Strategic Planner",
-    traits: [
-      "You optimize every financial decision",
-      "Love researching and comparing options",
-      "Multiple budgets and tracking systems",
-      "Balance between saving and smart spending"
-    ]
-  },
-  Unicorn: {
-    emoji: "🦄",
-    name: "YOLO Unicorn",
-    description: "The Experience Seeker",
-    traits: [
-      "You value experiences over savings",
-      "Live in the moment philosophy",
-      "Willing to spend on what brings joy",
-      "Less worried about the future"
-    ]
-  },
-  Dragon: {
-    emoji: "🐉",
-    name: "Impulsive Dragon",
-    description: "The Spontaneous Spender",
-    traits: [
-      "You struggle with impulse control",
-      "Buy now, worry later mentality",
-      "Emotional spending when stressed",
-      "Need support to build better habits"
-    ]
-  }
-};
+      
       // Add expense function
       const addExpense = (expense) => {
         setExpenses([...expenses, { 
@@ -289,15 +290,17 @@ const personalities = {
             {currentPage === 'goals' && <GoalsPage />}
             {currentPage === 'reports' && <ReportsPage expenses={expenses} />}
           </main>
-{/* Money Personality Quiz */}
-{showQuiz && (
-  <MoneyPersonalityQuiz 
-    onComplete={(p) => { 
-      setPersonality(p); 
-      setShowQuiz(false); 
-    }} 
-  />
-)}
+
+          {/* Money Personality Quiz */}
+          {showQuiz && (
+            <MoneyPersonalityQuiz 
+              onComplete={(p) => { 
+                setPersonality(p); 
+                setShowQuiz(false); 
+              }} 
+            />
+          )}
+
           {/* Expense Modal */}
           {showExpenseModal && (
             <ExpenseModal 
@@ -326,26 +329,27 @@ const personalities = {
       return (
         <div className="space-y-6">
           {/* Personality Badge */}
-{personality && (
-  <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6">
-    <div className="flex items-center gap-4">
-      <span className="text-5xl">{personalities[personality].emoji}</span>
-      <div className="flex-1">
-        <h3 className="font-bold text-xl">{personalities[personality].name}</h3>
-        <p className="text-gray-600">{personalities[personality].description}</p>
-      </div>
-      <button 
-        onClick={() => { 
-          localStorage.removeItem('saveup_personality'); 
-          window.location.reload();
-        }}
-        className="ml-auto text-purple-600 hover:text-purple-800 text-sm font-medium whitespace-nowrap"
-      >
-        Retake Quiz
-      </button>
-    </div>
-  </div>
-)}
+          {personality && (
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6">
+              <div className="flex items-center gap-4">
+                <span className="text-5xl">{personalities[personality].emoji}</span>
+                <div className="flex-1">
+                  <h3 className="font-bold text-xl">{personalities[personality].name}</h3>
+                  <p className="text-gray-600">{personalities[personality].description}</p>
+                </div>
+                <button 
+                  onClick={() => { 
+                    localStorage.removeItem('saveup_personality'); 
+                    window.location.reload();
+                  }}
+                  className="ml-auto text-purple-600 hover:text-purple-800 text-sm font-medium whitespace-nowrap"
+                >
+                  Retake Quiz
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <StatCard 
@@ -436,6 +440,110 @@ const personalities = {
           <p className="text-sm opacity-90 mb-2">{title}</p>
           <p className="text-3xl font-bold mb-1">{value}</p>
           <p className="text-sm opacity-80">{subtitle}</p>
+        </div>
+      );
+    };
+
+    // ========================================
+    // MONEY PERSONALITY QUIZ COMPONENT
+    // ========================================
+
+    const MoneyPersonalityQuiz = ({ onComplete }) => {
+      const [currentQ, setCurrentQ] = useState(0);
+      const [answers, setAnswers] = useState([]);
+      const [result, setResult] = useState(null);
+
+      const handleAnswer = (type) => {
+        const newAnswers = [...answers, type];
+        setAnswers(newAnswers);
+
+        if (currentQ < quizQuestions.length - 1) {
+          setCurrentQ(currentQ + 1);
+        } else {
+          const counts = {};
+          newAnswers.forEach(a => {
+            counts[a] = (counts[a] || 0) + 1;
+          });
+          const winner = Object.keys(counts).reduce((a, b) => 
+            counts[a] > counts[b] ? a : b
+          );
+          setResult(winner);
+        }
+      };
+
+      const finishQuiz = () => {
+        localStorage.setItem('saveup_personality', result);
+        onComplete(result);
+      };
+
+      if (result) {
+        const persona = personalities[result];
+        return (
+          <div className="fixed inset-0 bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-3xl max-w-2xl w-full p-8 text-center">
+              <div className="text-8xl mb-4">{persona.emoji}</div>
+              <h2 className="text-4xl font-bold mb-2">{persona.name}</h2>
+              <p className="text-xl text-gray-600 mb-6">{persona.description}</p>
+              
+              <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-left">
+                <h3 className="font-bold mb-3">Your Money Traits:</h3>
+                <ul className="space-y-2">
+                  {persona.traits.map((trait, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-purple-600">✓</span>
+                      <span>{trait}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <p className="text-gray-600 mb-6">
+                SaveUp will adapt to your {persona.name} personality and help you build better financial habits!
+              </p>
+
+              <button
+                onClick={finishQuiz}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all"
+              >
+                Start Your Financial Journey! 🚀
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const progress = ((currentQ + 1) / quizQuestions.length) * 100;
+
+      return (
+        <div className="fixed inset-0 bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-8">
+            <div className="mb-6">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Question {currentQ + 1} of {quizQuestions.length}</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold mb-6">{quizQuestions[currentQ].q}</h2>
+
+            <div className="space-y-3">
+              {quizQuestions[currentQ].options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleAnswer(option.type)}
+                  className="w-full p-4 text-left bg-gray-50 hover:bg-purple-50 border-2 border-transparent hover:border-purple-600 rounded-xl transition-all font-medium"
+                >
+                  {option.text}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       );
     };
@@ -538,110 +646,7 @@ const personalities = {
         </div>
       );
     };
-// ========================================
-// MONEY PERSONALITY QUIZ COMPONENT
-// ========================================
 
-const MoneyPersonalityQuiz = ({ onComplete }) => {
-  const [currentQ, setCurrentQ] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [result, setResult] = useState(null);
-
-  const handleAnswer = (type) => {
-    const newAnswers = [...answers, type];
-    setAnswers(newAnswers);
-
-    if (currentQ < quizQuestions.length - 1) {
-      setCurrentQ(currentQ + 1);
-    } else {
-      // Calculate result
-      const counts = {};
-      newAnswers.forEach(a => {
-        counts[a] = (counts[a] || 0) + 1;
-      });
-      const winner = Object.keys(counts).reduce((a, b) => 
-        counts[a] > counts[b] ? a : b
-      );
-      setResult(winner);
-    }
-  };
-
-  const finishQuiz = () => {
-    localStorage.setItem('saveup_personality', result);
-    onComplete(result);
-  };
-
-  if (result) {
-    const persona = personalities[result];
-    return (
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-3xl max-w-2xl w-full p-8 text-center">
-          <div className="text-8xl mb-4">{persona.emoji}</div>
-          <h2 className="text-4xl font-bold mb-2">{persona.name}</h2>
-          <p className="text-xl text-gray-600 mb-6">{persona.description}</p>
-          
-          <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-left">
-            <h3 className="font-bold mb-3">Your Money Traits:</h3>
-            <ul className="space-y-2">
-              {persona.traits.map((trait, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="text-purple-600">✓</span>
-                  <span>{trait}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <p className="text-gray-600 mb-6">
-            SaveUp will adapt to your {persona.name} personality and help you build better financial habits!
-          </p>
-
-          <button
-            onClick={finishQuiz}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all"
-          >
-            Start Your Financial Journey! 🚀
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const progress = ((currentQ + 1) / quizQuestions.length) * 100;
-
-  return (
-    <div className="fixed inset-0 bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-8">
-        <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Question {currentQ + 1} of {quizQuestions.length}</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-
-        <h2 className="text-2xl font-bold mb-6">{quizQuestions[currentQ].q}</h2>
-
-        <div className="space-y-3">
-          {quizQuestions[currentQ].options.map((option, i) => (
-            <button
-              key={i}
-              onClick={() => handleAnswer(option.type)}
-              className="w-full p-4 text-left bg-gray-50 hover:bg-purple-50 border-2 border-transparent hover:border-purple-600 rounded-xl transition-all font-medium"
-            >
-              {option.text}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
     // ========================================
     // EXPENSES LIST COMPONENT
     // ========================================
