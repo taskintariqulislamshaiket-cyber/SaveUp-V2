@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveUp - Your Financial Companion</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // ========================================
+    // DATA & STATE MANAGEMENT
+    // ========================================
+    
+    const App = () => {
+      const [expenses, setExpenses] = useState([]);
+      const [showExpenseModal, setShowExpenseModal] = useState(false);
+      const [currentPage, setCurrentPage] = useState('dashboard');
+      const [totalBudget, setTotalBudget] = useState(50000);
+      
+      // Load expenses from localStorage
+      useEffect(() => {
+        const saved = localStorage.getItem('saveup_expenses');
+        if (saved) {
+          setExpenses(JSON.parse(saved));
+        }
+      }, []);
+      
+      // Save expenses to localStorage
+      useEffect(() => {
+        localStorage.setItem('saveup_expenses', JSON.stringify(expenses));
+      }, [expenses]);
+      
+      // Calculate totals
+      const thisMonthSpent = expenses
+        .filter(e => {
+          const expenseDate = new Date(e.date);
+          const now = new Date();
+          return expenseDate.getMonth() === now.getMonth() && 
+                 expenseDate.getFullYear() === now.getFullYear();
+        })
+        .reduce((sum, e) => sum + e.amount, 0);
+      
+      const todaySpent = expenses
+        .filter(e => {
+          const expenseDate = new Date(e.date);
+          const today = new Date();
+          return expenseDate.toDateString() === today.toDateString();
+        })
+        .reduce((sum, e) => sum + e.amount, 0);
+      
+      const remaining = totalBudget - thisMonthSpent;
+      const healthScore = Math.max(0, Math.min(1000, Math.round((remaining / totalBudget) * 1000)));
+      
+      // Add expense function
+      const addExpense = (expense) => {
+        setExpenses([...expenses, { 
+          ...expense, 
+          id: Date.now(),
+          date: new Date().toISOString()
+        }]);
+        setShowExpenseModal(false);
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+          {/* Header */}
+          <header className="bg-white shadow-sm sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                  S
+                </div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  SaveUp
+                </h1>
+              </div>
+              <button 
+                onClick={() => setShowExpenseModal(true)}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-xl font-semibold hover:shadow-lg transition-all"
+              >
+                + Add Expense
+              </button>
+            </div>
+          </header>
+
+          {/* Navigation */}
+          <nav className="bg-white border-b sticky top-16 z-40">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex gap-6">
+                {['dashboard', 'expenses', 'goals', 'reports'].map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`py-4 px-2 font-medium transition-all border-b-2 capitalize ${
+                      currentPage === page 
+                        ? 'border-purple-600 text-purple-600' 
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </nav>
+
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-4 py-8">
+            {currentPage === 'dashboard' && (
+              <Dashboard 
+                thisMonthSpent={thisMonthSpent}
+                todaySpent={todaySpent}
+                remaining={remaining}
+                healthScore={healthScore}
+                expenses={expenses}
+                totalBudget={totalBudget}
+              />
+            )}
+            
+            {currentPage === 'expenses' && (
+              <ExpensesList expenses={expenses} setExpenses={setExpenses} />
+            )}
+            
+            {currentPage === 'goals' && <GoalsPage />}
+            {currentPage === 'reports' && <ReportsPage expenses={expenses} />}
+          </main>
+
+          {/* Expense Modal */}
+          {showExpenseModal && (
+            <ExpenseModal 
+              onClose={() => setShowExpenseModal(false)}
+              onAdd={addExpense}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // ========================================
+    // DASHBOARD COMPONENT
+    // ========================================
+    
+    const Dashboard = ({ thisMonthSpent, todaySpent, remaining, healthScore, expenses, totalBudget }) => {
+      const categories = ['Dining', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Healthcare', 'Other'];
+      
+      const categoryTotals = categories.map(cat => {
+        const total = expenses
+          .filter(e => e.category === cat)
+          .reduce((sum, e) => sum + e.amount, 0);
+        return { name: cat, amount: total };
+      }).filter(c => c.amount > 0);
+
+      return (
+        <div className="space-y-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <StatCard 
+              title="This Month"
+              value={`৳ ${thisMonthSpent.toLocaleString()}`}
+              subtitle={`of ৳${totalBudget.toLocaleString()}`}
+              color="purple"
+            />
+            <StatCard 
+              title="Remaining"
+              value={`৳ ${remaining.toLocaleString()}`}
+              subtitle={`${Math.round((remaining/totalBudget)*100)}% left`}
+              color="green"
+            />
+            <StatCard 
+              title="Today"
+              value={`৳ ${todaySpent.toLocaleString()}`}
+              subtitle="Spent today"
+              color="blue"
+            />
+            <StatCard 
+              title="Health Score"
+              value={healthScore}
+              subtitle="Financial health"
+              color="pink"
+            />
+          </div>
+
+          {/* Chart Section */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Spending by Category</h2>
+            {categoryTotals.length > 0 ? (
+              <div className="space-y-3">
+                {categoryTotals.map(cat => (
+                  <div key={cat.name}>
+                    <div className="flex justify-between mb-1">
+                      <span className="font-medium">{cat.name}</span>
+                      <span className="text-gray-600">৳ {cat.amount.toLocaleString()}</span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
+                        style={{ width: `${(cat.amount / thisMonthSpent) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">No expenses yet. Add your first expense!</p>
+            )}
+          </div>
+
+          {/* Recent Transactions */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Recent Transactions</h2>
+            {expenses.slice(-5).reverse().map(expense => (
+              <div key={expense.id} className="flex justify-between items-center py-3 border-b last:border-0">
+                <div>
+                  <p className="font-medium">{expense.description || expense.category}</p>
+                  <p className="text-sm text-gray-500">{new Date(expense.date).toLocaleDateString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-red-600">৳ {expense.amount.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500">{expense.category}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    // ========================================
+    // STAT CARD COMPONENT
+    // ========================================
+    
+    const StatCard = ({ title, value, subtitle, color }) => {
+      const colors = {
+        purple: 'from-purple-500 to-purple-600',
+        green: 'from-green-500 to-green-600',
+        blue: 'from-blue-500 to-blue-600',
+        pink: 'from-pink-500 to-pink-600',
+      };
+      
+      return (
+        <div className={`bg-gradient-to-br ${colors[color]} rounded-2xl p-6 text-white shadow-lg`}>
+          <p className="text-sm opacity-90 mb-2">{title}</p>
+          <p className="text-3xl font-bold mb-1">{value}</p>
+          <p className="text-sm opacity-80">{subtitle}</p>
+        </div>
+      );
+    };
+
+    // ========================================
+    // EXPENSE MODAL COMPONENT
+    // ========================================
+    
+    const ExpenseModal = ({ onClose, onAdd }) => {
+      const [amount, setAmount] = useState('');
+      const [category, setCategory] = useState('Dining');
+      const [description, setDescription] = useState('');
+      const [satisfaction, setSatisfaction] = useState(3);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!amount || isNaN(amount)) return;
+        
+        onAdd({
+          amount: parseFloat(amount),
+          category,
+          description,
+          satisfaction
+        });
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Add Expense</h2>
+              <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Amount (৳)</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="0"
+                  autoFocus
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Category</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                >
+                  {['Dining', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Healthcare', 'Other'].map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Description (Optional)</label>
+                <input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="What did you buy?"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Satisfaction (1-5)</label>
+                <div className="flex gap-2">
+                  {[1,2,3,4,5].map(num => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setSatisfaction(num)}
+                      className={`flex-1 py-2 rounded-lg font-medium transition-all ${
+                        satisfaction === num 
+                          ? 'bg-purple-600 text-white' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+              >
+                Add Expense
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // ========================================
+    // EXPENSES LIST COMPONENT
+    // ========================================
+    
+    const ExpensesList = ({ expenses, setExpenses }) => {
+      const deleteExpense = (id) => {
+        if (confirm('Delete this expense?')) {
+          setExpenses(expenses.filter(e => e.id !== id));
+        }
+      };
+
+      return (
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-6">All Expenses</h2>
+          {expenses.length === 0 ? (
+            <p className="text-gray-500 text-center py-12">No expenses yet. Start tracking!</p>
+          ) : (
+            <div className="space-y-3">
+              {expenses.slice().reverse().map(expense => (
+                <div key={expense.id} className="flex justify-between items-center p-4 border rounded-xl hover:bg-gray-50">
+                  <div className="flex-1">
+                    <p className="font-medium">{expense.description || expense.category}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(expense.date).toLocaleDateString()} • {expense.category}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <p className="font-bold text-lg">৳ {expense.amount.toLocaleString()}</p>
+                    <button
+                      onClick={() => deleteExpense(expense.id)}
+                      className="text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ========================================
+    // GOALS PAGE COMPONENT
+    // ========================================
+    
+    const GoalsPage = () => {
+      const [goals, setGoals] = useState(() => {
+        const saved = localStorage.getItem('saveup_goals');
+        return saved ? JSON.parse(saved) : [];
+      });
+      
+      const [showAddGoal, setShowAddGoal] = useState(false);
+      const [newGoal, setNewGoal] = useState({ name: '', target: '', current: 0 });
+      
+      useEffect(() => {
+        localStorage.setItem('saveup_goals', JSON.stringify(goals));
+      }, [goals]);
+      
+      const addGoal = () => {
+        if (newGoal.name && newGoal.target) {
+          setGoals([...goals, { ...newGoal, id: Date.now(), target: parseFloat(newGoal.target) }]);
+          setNewGoal({ name: '', target: '', current: 0 });
+          setShowAddGoal(false);
+        }
+      };
+      
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Savings Goals</h2>
+            <button
+              onClick={() => setShowAddGoal(true)}
+              className="bg-purple-600 text-white px-6 py-2 rounded-xl font-semibold hover:shadow-lg"
+            >
+              + New Goal
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {goals.map(goal => {
+              const progress = (goal.current / goal.target) * 100;
+              return (
+                <div key={goal.id} className="bg-white rounded-2xl shadow-lg p-6">
+                  <h3 className="font-bold text-xl mb-2">{goal.name}</h3>
+                  <p className="text-gray-600 mb-4">
+                    ৳ {goal.current.toLocaleString()} of ৳ {goal.target.toLocaleString()}
+                  </p>
+                  <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
+                      style={{ width: `${Math.min(progress, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">{Math.round(progress)}% Complete</p>
+                </div>
+              );
+            })}
+          </div>
+          
+          {showAddGoal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+                <h3 className="text-xl font-bold mb-4">New Savings Goal</h3>
+                <input
+                  type="text"
+                  placeholder="Goal name (e.g., Emergency Fund)"
+                  value={newGoal.name}
+                  onChange={(e) => setNewGoal({...newGoal, name: e.target.value})}
+                  className="w-full px-4 py-3 border rounded-xl mb-3"
+                />
+                <input
+                  type="number"
+                  placeholder="Target amount (৳)"
+                  value={newGoal.target}
+                  onChange={(e) => setNewGoal({...newGoal, target: e.target.value})}
+                  className="w-full px-4 py-3 border rounded-xl mb-4"
+                />
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowAddGoal(false)}
+                    className="flex-1 px-4 py-3 border rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={addGoal}
+                    className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl"
+                  >
+                    Create Goal
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ========================================
+    // REPORTS PAGE COMPONENT
+    // ========================================
+    
+    const ReportsPage = ({ expenses }) => {
+      const thisMonth = expenses.filter(e => {
+        const d = new Date(e.date);
+        const now = new Date();
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+      
+      const categoryBreakdown = {};
+      thisMonth.forEach(e => {
+        categoryBreakdown[e.category] = (categoryBreakdown[e.category] || 0) + e.amount;
+      });
+      
+      return (
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Monthly Report</h2>
+          
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="font-bold text-xl mb-4">Category Breakdown</h3>
+            <div className="space-y-4">
+              {Object.entries(categoryBreakdown).map(([category, amount]) => (
+                <div key={category}>
+                  <div className="flex justify-between mb-2">
+                    <span className="font-medium">{category}</span>
+                    <span className="font-bold">৳ {amount.toLocaleString()}</span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full">
+                    <div 
+                      className="h-full bg-purple-600 rounded-full"
+                      style={{ width: `${(amount / thisMonth.reduce((s, e) => s + e.amount, 0)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ========================================
+    // RENDER APP
+    // ========================================
+    
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
