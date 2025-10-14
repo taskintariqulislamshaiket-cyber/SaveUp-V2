@@ -278,6 +278,7 @@ const personalities = {
                 healthScore={healthScore}
                 expenses={expenses}
                 totalBudget={totalBudget}
+                personality={personality}
               />
             )}
             
@@ -312,7 +313,7 @@ const personalities = {
     // DASHBOARD COMPONENT
     // ========================================
     
-    const Dashboard = ({ thisMonthSpent, todaySpent, remaining, healthScore, expenses, totalBudget }) => {
+    const Dashboard = ({ thisMonthSpent, todaySpent, remaining, healthScore, expenses, totalBudget, personality }) => {
       const categories = ['Dining', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Healthcare', 'Other'];
       
       const categoryTotals = categories.map(cat => {
