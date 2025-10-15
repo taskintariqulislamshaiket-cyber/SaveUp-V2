@@ -214,7 +214,7 @@
             }
         };
 
-        // Login Component with REDIRECT method (better for mobile)
+        // Login Component with POPUP method (better compatibility)
         function LoginPage({ onLoginSuccess }) {
             const [loading, setLoading] = useState(false);
             const [error, setError] = useState("");
@@ -225,19 +225,43 @@
                 
                 try {
                     const provider = new firebase.auth.GoogleAuthProvider();
-                    // Use REDIRECT instead of POPUP (works better on mobile)
-                    await auth.signInWithRedirect(provider);
+                    provider.setCustomParameters({
+                        prompt: 'select_account'
+                    });
+                    
+                    // Try POPUP method first
+                    const result = await auth.signInWithPopup(provider);
+                    console.log("Login successful!", result.user.email);
+                    
+                    const user = result.user;
+                    
+                    // Save user to Firestore
+                    await db.collection('users').doc(user.uid).set({
+                        displayName: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    
+                    console.log("User saved to Firestore");
+                    onLoginSuccess(user);
+                    
                 } catch (error) {
                     console.error("Login error:", error);
                     setLoading(false);
                     
                     // Better error messages
                     if (error.code === 'auth/popup-blocked') {
-                        setError("Popup was blocked. Please allow popups for this site.");
+                        setError("Popup was blocked. Please allow popups for this site in your browser settings.");
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                        setError("Login cancelled. Please try again.");
                     } else if (error.code === 'auth/unauthorized-domain') {
                         setError("Domain not authorized. Please contact support.");
                     } else if (error.code === 'auth/network-request-failed') {
                         setError("Network error. Please check your internet connection.");
+                    } else if (error.code === 'auth/cancelled-popup-request') {
+                        // User clicked button multiple times, ignore
+                        setError("");
                     } else {
                         setError(`Login failed: ${error.message}`);
                     }
