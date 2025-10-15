@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaveUp - Smart Finance Tracker for Bangladesh</title>
@@ -65,133 +65,133 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Money Personality Quiz Data
+        // Money Personality Quiz Data (80% English, 20% Bangla)
         const quizQuestions = [
             {
                 id: 1,
-                question: "কেউ আপনাকে ৫০,০০০ টাকা দিলে আপনি কী করবেন?",
+                question: "If someone gave you ৳50,000, what would you do?",
                 options: [
-                    { text: "সঞ্চয় করব ভবিষ্যতের জন্য", personality: "lion" },
-                    { text: "বিনিয়োগ করব লাভের আশায়", personality: "fox" },
-                    { text: "নিজের স্বপ্ন পূরণে খরচ করব", personality: "unicorn" },
-                    { text: "পরিবারের কল্যাণে ব্যবহার করব", personality: "dragon" }
+                    { text: "Save it for the future", personality: "lion" },
+                    { text: "Invest it for profit", personality: "fox" },
+                    { text: "Spend on my dreams", personality: "unicorn" },
+                    { text: "Use for family welfare", personality: "dragon" }
                 ]
             },
             {
                 id: 2,
-                question: "মাসের শেষে বাড়তি টাকা থাকলে আপনি কী করেন?",
+                question: "What do you do with extra money at month-end?",
                 options: [
-                    { text: "ব্যাংকে জমা রাখি", personality: "lion" },
-                    { text: "শেয়ার/ব্যবসায় লাগাই", personality: "fox" },
-                    { text: "নিজের শখে খরচ করি", personality: "unicorn" },
-                    { text: "পরিবারকে দিয়ে দিই", personality: "dragon" }
+                    { text: "Deposit in bank", personality: "lion" },
+                    { text: "Invest in stocks/business", personality: "fox" },
+                    { text: "Spend on my hobbies", personality: "unicorn" },
+                    { text: "Give to family", personality: "dragon" }
                 ]
             },
             {
                 id: 3,
-                question: "আপনার খরচের ধরন কেমন?",
+                question: "How would you describe your spending style?",
                 options: [
-                    { text: "হিসাব করে খরচ করি", personality: "lion" },
-                    { text: "লাভজনক জায়গায় খরচ করি", personality: "fox" },
-                    { text: "মন চাইলেই কিনি", personality: "unicorn" },
-                    { text: "অন্যদের কথা ভেবে খরচ করি", personality: "dragon" }
+                    { text: "Calculated and planned", personality: "lion" },
+                    { text: "Focus on profitable purchases", personality: "fox" },
+                    { text: "Buy what I want", personality: "unicorn" },
+                    { text: "Consider others first", personality: "dragon" }
                 ]
             },
             {
                 id: 4,
-                question: "ঈদের সময় আপনার খরচ কেমন হয়?",
+                question: "During Eid, how do you spend?",
                 options: [
-                    { text: "বাজেট করে কিনি", personality: "lion" },
-                    { text: "দরদাম করে সাশ্রয় করি", personality: "fox" },
-                    { text: "যা ভালো লাগে তাই কিনি", personality: "unicorn" },
-                    { text: "সবার জন্য কিনি", personality: "dragon" }
+                    { text: "Shop within budget", personality: "lion" },
+                    { text: "Bargain for best deals", personality: "fox" },
+                    { text: "Buy what I like", personality: "unicorn" },
+                    { text: "Buy for everyone", personality: "dragon" }
                 ]
             },
             {
                 id: 5,
-                question: "বেতন পাওয়ার পর প্রথমে কী করেন?",
+                question: "First thing after receiving salary?",
                 options: [
-                    { text: "সঞ্চয় আলাদা করি", personality: "lion" },
-                    { text: "বিল/ঋণ পরিশোধ করি", personality: "fox" },
-                    { text: "নিজের জন্য কিছু কিনি", personality: "unicorn" },
-                    { text: "পরিবারকে দিই", personality: "dragon" }
+                    { text: "Set aside savings", personality: "lion" },
+                    { text: "Pay bills and debts", personality: "fox" },
+                    { text: "Buy something for myself", personality: "unicorn" },
+                    { text: "Give to family", personality: "dragon" }
                 ]
             },
             {
                 id: 6,
-                question: "হঠাৎ বড় খরচ পড়লে কী করেন?",
+                question: "How do you handle sudden large expenses?",
                 options: [
-                    { text: "জরুরি তহবিল থেকে দিই", personality: "lion" },
-                    { text: "কিস্তিতে পরিশোধ করি", personality: "fox" },
-                    { text: "ধার নিয়ে হলেও দিই", personality: "unicorn" },
-                    { text: "পরিবার থেকে সাহায্য নিই", personality: "dragon" }
+                    { text: "Use emergency fund", personality: "lion" },
+                    { text: "Pay in installments", personality: "fox" },
+                    { text: "Borrow if needed", personality: "unicorn" },
+                    { text: "Get help from family", personality: "dragon" }
                 ]
             },
             {
                 id: 7,
-                question: "আপনার ভবিষ্যৎ পরিকল্পনা কী?",
+                question: "What's your future plan?",
                 options: [
-                    { text: "একটা বাড়ি/ফ্ল্যাট কিনব", personality: "lion" },
-                    { text: "নিজের ব্যবসা খুলব", personality: "fox" },
-                    { text: "বিদেশ ঘুরব/স্বপ্ন পূরণ করব", personality: "unicorn" },
-                    { text: "পরিবারের সুখ-শান্তি নিশ্চিত করব", personality: "dragon" }
+                    { text: "Buy a house/flat", personality: "lion" },
+                    { text: "Start my own business", personality: "fox" },
+                    { text: "Travel abroad/fulfill dreams", personality: "unicorn" },
+                    { text: "Ensure family happiness", personality: "dragon" }
                 ]
             },
             {
                 id: 8,
-                question: "অনলাইন শপিং করার সময় আপনার অভ্যাস কী?",
+                question: "Your online shopping habit?",
                 options: [
-                    { text: "প্রয়োজন মতো কিনি", personality: "lion" },
-                    { text: "ডিসকাউন্ট দেখে কিনি", personality: "fox" },
-                    { text: "যা মন চায় তাই কিনি", personality: "unicorn" },
-                    { text: "পরিবারের জন্য কিনি", personality: "dragon" }
+                    { text: "Buy only necessities", personality: "lion" },
+                    { text: "Buy during discounts", personality: "fox" },
+                    { text: "Buy what I like", personality: "unicorn" },
+                    { text: "Buy for family", personality: "dragon" }
                 ]
             },
             {
                 id: 9,
-                question: "বন্ধুদের সাথে খাওয়ার বিল কীভাবে দেন?",
+                question: "How do you split bills with friends?",
                 options: [
-                    { text: "নিজের অংশ দিই", personality: "lion" },
-                    { text: "সবাই ভাগ করে দিই", personality: "fox" },
-                    { text: "আমি পুরো দিয়ে দিই", personality: "unicorn" },
-                    { text: "যার সামর্থ্য বেশি সে দেয়", personality: "dragon" }
+                    { text: "Pay my share", personality: "lion" },
+                    { text: "Split equally", personality: "fox" },
+                    { text: "I pay for everyone", personality: "unicorn" },
+                    { text: "Whoever can afford more", personality: "dragon" }
                 ]
             },
             {
                 id: 10,
-                question: "আপনার সঞ্চয়ের লক্ষ্য কী?",
+                question: "What's your savings goal?",
                 options: [
-                    { text: "নিরাপত্তা ও স্থিতিশীলতা", personality: "lion" },
-                    { text: "সম্পদ বৃদ্ধি", personality: "fox" },
-                    { text: "স্বপ্ন পূরণ", personality: "unicorn" },
-                    { text: "পরিবারের ভবিষ্যৎ", personality: "dragon" }
+                    { text: "Security and stability", personality: "lion" },
+                    { text: "Wealth growth", personality: "fox" },
+                    { text: "Dream fulfillment", personality: "unicorn" },
+                    { text: "Family's future", personality: "dragon" }
                 ]
             }
         ];
 
         const personalities = {
             lion: {
-                name: "সিংহ 🦁 - দায়িত্বশীল সঞ্চয়কারী",
-                description: "আপনি অত্যন্ত দায়িত্বশীল এবং পরিকল্পিত। ভবিষ্যতের নিরাপত্তা আপনার প্রথম অগ্রাধিকার।",
-                tips: "বাজেট মেনে চলুন, জরুরি তহবিল তৈরি করুন।",
+                name: "Lion 🦁 - The Responsible Saver",
+                description: "You're disciplined and plan ahead. Future security is your top priority.",
+                tips: "Keep following your budget and build that emergency fund!",
                 color: "from-yellow-400 to-orange-500"
             },
             fox: {
-                name: "শিয়াল 🦊 - বুদ্ধিমান বিনিয়োগকারী",
-                description: "আপনি চতুর এবং লাভজনক সিদ্ধান্ত নিতে পারদর্শী। আপনার টাকা কাজে লাগান।",
-                tips: "বিনিয়োগ শিখুন, ঝুঁকি বুঝে সিদ্ধান্ত নিন।",
+                name: "Fox 🦊 - The Smart Investor",
+                description: "You're clever and make profitable decisions. You know how to make money work.",
+                tips: "Continue learning about investments and calculate your risks wisely.",
                 color: "from-orange-400 to-red-500"
             },
             unicorn: {
-                name: "ইউনিকর্ন 🦄 - স্বপ্নবাজ খরচুরে",
-                description: "আপনি জীবন উপভোগ করতে ভালোবাসেন। তবে একটু সতর্ক হলে আরও ভালো হবে।",
-                tips: "খরচ ট্র্যাক করুন, ছোট ছোট সঞ্চয় শুরু করুন।",
+                name: "Unicorn 🦄 - The Dream Spender",
+                description: "You love enjoying life. A bit of caution will take you far!",
+                tips: "Track your expenses and start small savings - you got this!",
                 color: "from-pink-400 to-purple-500"
             },
             dragon: {
-                name: "ড্রাগন 🐉 - পরিবার-কেন্দ্রিক দাতা",
-                description: "আপনি পরিবারের জন্য সবকিছু করতে পারেন। তবে নিজের জন্যও রাখুন।",
-                tips: "পরিবার ও নিজের মধ্যে ভারসাম্য রাখুন।",
+                name: "Dragon 🐉 - The Family Provider",
+                description: "You'd do anything for family. But remember to save for yourself too!",
+                tips: "Balance between family and personal savings for long-term security.",
                 color: "from-green-400 to-blue-500"
             }
         };
@@ -221,7 +221,7 @@
                     onLoginSuccess(user);
                 } catch (error) {
                     console.error("Login error:", error);
-                    setError("লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                    setError("Login failed. Please try again or check your internet connection.");
                 } finally {
                     setLoading(false);
                 }
@@ -237,7 +237,7 @@
                                 </span>
                             </h1>
                             <p className="text-gray-600 text-lg">
-                                বাংলাদেশের স্মার্ট ফাইন্যান্স ট্র্যাকার
+                                Smart Finance Tracker for Bangladesh
                             </p>
                         </div>
 
@@ -248,15 +248,15 @@
                                 <div className="text-4xl">🎯</div>
                             </div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-3 text-center">
-                                আপনার আর্থিক স্বাধীনতার যাত্রা শুরু করুন
+                                Start Your Financial Freedom Journey
                             </h2>
                             <p className="text-gray-600 text-center">
-                                খরচ ট্র্যাক করুন • লক্ষ্য নির্ধারণ করুন • সঞ্চয় বাড়ান
+                                Track Expenses • Set Goals • Build Savings
                             </p>
                         </div>
 
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
                                 {error}
                             </div>
                         )}
@@ -267,7 +267,7 @@
                             className="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 flex items-center justify-center space-x-3 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
-                                <span>লগইন হচ্ছে...</span>
+                                <span>Signing in...</span>
                             ) : (
                                 <>
                                     <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -276,20 +276,20 @@
                                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                                     </svg>
-                                    <span>Google দিয়ে লগইন করুন</span>
+                                    <span>Sign in with Google</span>
                                 </>
                             )}
                         </button>
 
                         <p className="text-xs text-gray-500 text-center mt-6">
-                            লগইন করে আপনি আমাদের শর্তাবলী ও গোপনীয়তা নীতিতে সম্মত হচ্ছেন
+                            By signing in, you agree to our Terms & Privacy Policy
                         </p>
                     </div>
                 </div>
             );
         }
 
-        // Main App Component (rest of your SaveUp app)
+        // Main App Component
         function App() {
             const [user, setUser] = useState(null);
             const [loading, setLoading] = useState(true);
@@ -355,7 +355,7 @@
             if (loading) {
                 return (
                     <div className="min-h-screen flex items-center justify-center gradient-bg">
-                        <div className="text-white text-2xl">লোড হচ্ছে...</div>
+                        <div className="text-white text-2xl">Loading...</div>
                     </div>
                 );
             }
@@ -395,7 +395,7 @@
                                     onClick={handleLogout}
                                     className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
                                 >
-                                    লগআউট
+                                    Logout
                                 </button>
                             </div>
                         </div>
@@ -409,16 +409,16 @@
                                     <button
                                         key={page}
                                         onClick={() => setCurrentPage(page)}
-                                        className={`py-4 px-6 font-semibold whitespace-nowrap ${
+                                        className={`py-4 px-6 font-semibold whitespace-nowrap capitalize ${
                                             currentPage === page
                                                 ? 'text-purple-600 border-b-2 border-purple-600'
                                                 : 'text-gray-600 hover:text-purple-600'
                                         }`}
                                     >
-                                        {page === 'dashboard' && '📊 ড্যাশবোর্ড'}
-                                        {page === 'expenses' && '💸 খরচ'}
-                                        {page === 'goals' && '🎯 লক্ষ্য'}
-                                        {page === 'reports' && '📈 রিপোর্ট'}
+                                        {page === 'dashboard' && '📊 Dashboard'}
+                                        {page === 'expenses' && '💸 Expenses'}
+                                        {page === 'goals' && '🎯 Goals'}
+                                        {page === 'reports' && '📈 Reports'}
                                     </button>
                                 ))}
                             </div>
@@ -488,19 +488,19 @@
                     {/* Stats Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <div className="text-gray-600 text-sm mb-2">এই মাসে খরচ</div>
+                            <div className="text-gray-600 text-sm mb-2">This Month</div>
                             <div className="text-2xl font-bold text-purple-600">৳{thisMonthExpenses.toLocaleString()}</div>
                         </div>
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <div className="text-gray-600 text-sm mb-2">বাকি আছে</div>
+                            <div className="text-gray-600 text-sm mb-2">Remaining</div>
                             <div className="text-2xl font-bold text-green-600">৳{remaining.toLocaleString()}</div>
                         </div>
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <div className="text-gray-600 text-sm mb-2">আজকের খরচ</div>
+                            <div className="text-gray-600 text-sm mb-2">Today</div>
                             <div className="text-2xl font-bold text-blue-600">৳{todayExpenses.toLocaleString()}</div>
                         </div>
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <div className="text-gray-600 text-sm mb-2">স্বাস্থ্য স্কোর</div>
+                            <div className="text-gray-600 text-sm mb-2">Health Score</div>
                             <div className="text-2xl font-bold text-pink-600">{Math.round(healthScore)}%</div>
                         </div>
                     </div>
@@ -510,13 +510,13 @@
                         onClick={onAddExpense}
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition"
                     >
-                        ➕ নতুন খরচ যোগ করুন
+                        ➕ Add New Expense
                     </button>
 
                     {/* Category Breakdown */}
                     {Object.keys(categoryData).length > 0 && (
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <h3 className="text-xl font-bold mb-4">ক্যাটেগরি অনুযায়ী খরচ</h3>
+                            <h3 className="text-xl font-bold mb-4">Spending by Category</h3>
                             {Object.entries(categoryData).map(([category, amount]) => (
                                 <div key={category} className="mb-4">
                                     <div className="flex justify-between mb-2">
@@ -537,12 +537,12 @@
                     {/* Recent Expenses */}
                     {expenses.length > 0 && (
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <h3 className="text-xl font-bold mb-4">সাম্প্রতিক খরচ</h3>
+                            <h3 className="text-xl font-bold mb-4">Recent Expenses</h3>
                             {expenses.slice(-5).reverse().map(exp => (
                                 <div key={exp.id} className="flex justify-between items-center py-3 border-b last:border-b-0">
                                     <div>
                                         <div className="font-semibold">{exp.note || exp.category}</div>
-                                        <div className="text-sm text-gray-600">{new Date(exp.date).toLocaleDateString('bn-BD')}</div>
+                                        <div className="text-sm text-gray-600">{new Date(exp.date).toLocaleDateString()}</div>
                                     </div>
                                     <div className="text-right">
                                         <div className="font-bold text-purple-600">৳{exp.amount.toLocaleString()}</div>
@@ -564,20 +564,20 @@
                         onClick={onAddExpense}
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition"
                     >
-                        ➕ নতুন খরচ যোগ করুন
+                        ➕ Add New Expense
                     </button>
 
                     <div className="bg-white rounded-2xl p-6 shadow-lg">
-                        <h2 className="text-2xl font-bold mb-6">সব খরচ</h2>
+                        <h2 className="text-2xl font-bold mb-6">All Expenses</h2>
                         {expenses.length === 0 ? (
-                            <p className="text-gray-600 text-center py-8">এখনো কোনো খরচ যোগ করা হয়নি</p>
+                            <p className="text-gray-600 text-center py-8">No expenses added yet</p>
                         ) : (
                             <div className="space-y-4">
                                 {expenses.slice().reverse().map(exp => (
                                     <div key={exp.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                                         <div className="flex-1">
                                             <div className="font-semibold text-lg">{exp.note || exp.category}</div>
-                                            <div className="text-sm text-gray-600">{exp.category} • {new Date(exp.date).toLocaleDateString('bn-BD')}</div>
+                                            <div className="text-sm text-gray-600">{exp.category} • {new Date(exp.date).toLocaleDateString()}</div>
                                         </div>
                                         <div className="flex items-center space-x-4">
                                             <div className="text-xl font-bold text-purple-600">৳{exp.amount.toLocaleString()}</div>
@@ -620,21 +620,21 @@
                         onClick={() => setShowAddGoal(!showAddGoal)}
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition"
                     >
-                        {showAddGoal ? '❌ বাতিল করুন' : '➕ নতুন লক্ষ্য যোগ করুন'}
+                        {showAddGoal ? '❌ Cancel' : '➕ Add New Goal'}
                     </button>
 
                     {showAddGoal && (
                         <div className="bg-white rounded-2xl p-6 shadow-lg">
                             <input
                                 type="text"
-                                placeholder="লক্ষ্যের নাম (যেমন: নতুন ফোন)"
+                                placeholder="Goal name (e.g., New Phone)"
                                 value={newGoal.name}
                                 onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
                                 className="w-full p-3 border-2 border-gray-300 rounded-lg mb-4"
                             />
                             <input
                                 type="number"
-                                placeholder="লক্ষ্য পরিমাণ (৳)"
+                                placeholder="Target amount (৳)"
                                 value={newGoal.target}
                                 onChange={(e) => setNewGoal({ ...newGoal, target: e.target.value })}
                                 className="w-full p-3 border-2 border-gray-300 rounded-lg mb-4"
@@ -643,14 +643,14 @@
                                 onClick={addGoal}
                                 className="w-full bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition"
                             >
-                                ✅ লক্ষ্য তৈরি করুন
+                                ✅ Create Goal
                             </button>
                         </div>
                     )}
 
                     {goals.length === 0 ? (
                         <div className="bg-white rounded-2xl p-8 shadow-lg text-center text-gray-600">
-                            এখনো কোনো লক্ষ্য সেট করা হয়নি
+                            No goals set yet. Start by adding your first savings goal!
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -669,8 +669,8 @@
                                             ></div>
                                         </div>
                                         <div className="flex justify-between items-center mb-4">
-                                            <span className="text-gray-600">সঞ্চিত: ৳{goal.saved.toLocaleString()}</span>
-                                            <span className="text-gray-600">লক্ষ্য: ৳{goal.target.toLocaleString()}</span>
+                                            <span className="text-gray-600">Saved: ৳{goal.saved.toLocaleString()}</span>
+                                            <span className="text-gray-600">Target: ৳{goal.target.toLocaleString()}</span>
                                         </div>
                                         <div className="flex space-x-2">
                                             <button
@@ -687,12 +687,12 @@
                                             </button>
                                             <button
                                                 onClick={() => {
-                                                    const amount = prompt('কত টাকা যোগ করবেন?');
+                                                    const amount = prompt('How much to add?');
                                                     if (amount) updateGoalSavings(goal.id, parseFloat(amount));
                                                 }}
                                                 className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
                                             >
-                                                কাস্টম
+                                                Custom
                                             </button>
                                         </div>
                                     </div>
@@ -707,7 +707,7 @@
         // Reports Page
         function ReportsPage({ expenses }) {
             const monthlyData = expenses.reduce((acc, exp) => {
-                const month = new Date(exp.date).toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' });
+                const month = new Date(exp.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                 if (!acc[month]) acc[month] = {};
                 acc[month][exp.category] = (acc[month][exp.category] || 0) + exp.amount;
                 return acc;
@@ -716,9 +716,9 @@
             return (
                 <div className="space-y-6">
                     <div className="bg-white rounded-2xl p-6 shadow-lg">
-                        <h2 className="text-2xl font-bold mb-6">মাসিক রিপোর্ট</h2>
+                        <h2 className="text-2xl font-bold mb-6">Monthly Reports</h2>
                         {Object.keys(monthlyData).length === 0 ? (
-                            <p className="text-gray-600 text-center py-8">যথেষ্ট ডেটা নেই</p>
+                            <p className="text-gray-600 text-center py-8">Not enough data yet</p>
                         ) : (
                             Object.entries(monthlyData).map(([month, categories]) => {
                                 const total = Object.values(categories).reduce((sum, amt) => sum + amt, 0);
@@ -727,7 +727,7 @@
                                         <h3 className="text-xl font-bold mb-4">{month}</h3>
                                         <div className="mb-4">
                                             <div className="flex justify-between mb-2">
-                                                <span className="font-semibold">মোট খরচ</span>
+                                                <span className="font-semibold">Total Spent</span>
                                                 <span className="text-purple-600 font-bold">৳{total.toLocaleString()}</span>
                                             </div>
                                         </div>
@@ -760,12 +760,12 @@
         function ExpenseModal({ onClose, onSave }) {
             const [expense, setExpense] = useState({
                 amount: '',
-                category: 'খাবার',
+                category: 'Food',
                 note: '',
                 date: new Date().toISOString().split('T')[0]
             });
 
-            const categories = ['খাবার', 'যাতায়াত', 'বিনোদন', 'বিল', 'শপিং', 'স্বাস্থ্য', 'শিক্ষা', 'অন্যান্য'];
+            const categories = ['Food', 'Transport', 'Entertainment', 'Bills', 'Shopping', 'Health', 'Education', 'Others'];
 
             const handleSubmit = (e) => {
                 e.preventDefault();
@@ -778,23 +778,23 @@
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">নতুন খরচ যোগ করুন</h2>
+                            <h2 className="text-2xl font-bold">Add New Expense</h2>
                             <button onClick={onClose} className="text-2xl">&times;</button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold mb-2">পরিমাণ (৳)</label>
+                                <label className="block text-sm font-semibold mb-2">Amount (৳)</label>
                                 <input
                                     type="number"
                                     value={expense.amount}
                                     onChange={(e) => setExpense({ ...expense, amount: e.target.value })}
                                     className="w-full p-3 border-2 border-gray-300 rounded-lg"
-                                    placeholder="০"
+                                    placeholder="0"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2">ক্যাটেগরি</label>
+                                <label className="block text-sm font-semibold mb-2">Category</label>
                                 <select
                                     value={expense.category}
                                     onChange={(e) => setExpense({ ...expense, category: e.target.value })}
@@ -806,17 +806,17 @@
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2">নোট (ঐচ্ছিক)</label>
+                                <label className="block text-sm font-semibold mb-2">Note (optional)</label>
                                 <input
                                     type="text"
                                     value={expense.note}
                                     onChange={(e) => setExpense({ ...expense, note: e.target.value })}
                                     className="w-full p-3 border-2 border-gray-300 rounded-lg"
-                                    placeholder="কিসের জন্য খরচ?"
+                                    placeholder="What was this for?"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold mb-2">তারিখ</label>
+                                <label className="block text-sm font-semibold mb-2">Date</label>
                                 <input
                                     type="date"
                                     value={expense.date}
@@ -828,7 +828,7 @@
                                 type="submit"
                                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition"
                             >
-                                ✅ খরচ যোগ করুন
+                                ✅ Add Expense
                             </button>
                         </form>
                     </div>
@@ -863,14 +863,14 @@
                 <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
                     <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-center mb-4">আপনার টাকার ব্যক্তিত্ব কী?</h2>
+                            <h2 className="text-3xl font-bold text-center mb-4">What's Your Money Personality?</h2>
                             <div className="w-full bg-gray-200 rounded-full h-3">
                                 <div
                                     className="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-300"
                                     style={{ width: `${progress}%` }}
                                 ></div>
                             </div>
-                            <p className="text-center text-gray-600 mt-2">প্রশ্ন {currentQuestion + 1} / {quizQuestions.length}</p>
+                            <p className="text-center text-gray-600 mt-2">Question {currentQuestion + 1} of {quizQuestions.length}</p>
                         </div>
 
                         <div className="mb-8">
