@@ -78,6 +78,11 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Set persistence to LOCAL (survives browser restarts)
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
+            console.error("Persistence error:", error);
+        });
+
         // Money Personality Quiz Data
         const quizQuestions = [
             {
