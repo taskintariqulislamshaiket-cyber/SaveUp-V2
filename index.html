@@ -322,6 +322,7 @@
                 auth.getRedirectResult().then(async (result) => {
                     if (result.user) {
                         // User successfully signed in via redirect
+                        console.log("Redirect successful, user:", result.user.email);
                         await db.collection('users').doc(result.user.uid).set({
                             displayName: result.user.displayName,
                             email: result.user.email,
@@ -331,27 +332,38 @@
                     }
                 }).catch((error) => {
                     console.error("Redirect error:", error);
+                    setLoading(false);
                 });
 
                 // Listen to auth state changes
                 const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                    console.log("Auth state changed:", user ? user.email : "No user");
                     if (user) {
                         setUser(user);
                         // Load user data from Firestore
-                        const userDoc = await db.collection('users').doc(user.uid).get();
-                        if (userDoc.exists) {
-                            const userData = userDoc.data();
-                            if (userData.personality) {
-                                setPersonality(userData.personality);
+                        try {
+                            const userDoc = await db.collection('users').doc(user.uid).get();
+                            if (userDoc.exists) {
+                                const userData = userDoc.data();
+                                console.log("User data loaded:", userData);
+                                if (userData.personality) {
+                                    setPersonality(userData.personality);
+                                } else {
+                                    setShowQuiz(true);
+                                }
+                                if (userData.expenses) setExpenses(userData.expenses);
+                                if (userData.goals) setGoals(userData.goals);
+                                if (userData.monthlyBudget) setMonthlyBudget(userData.monthlyBudget);
                             } else {
+                                console.log("No user data, showing quiz");
                                 setShowQuiz(true);
                             }
-                            if (userData.expenses) setExpenses(userData.expenses);
-                            if (userData.goals) setGoals(userData.goals);
-                            if (userData.monthlyBudget) setMonthlyBudget(userData.monthlyBudget);
-                        } else {
+                        } catch (error) {
+                            console.error("Error loading user data:", error);
                             setShowQuiz(true);
                         }
+                    } else {
+                        console.log("No user logged in");
                     }
                     setLoading(false);
                 });
