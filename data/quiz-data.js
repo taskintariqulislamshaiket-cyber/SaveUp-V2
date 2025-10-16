@@ -1,5 +1,5 @@
-// Money Personality Quiz Questions
-const quizQuestions = [
+// Make data available globally
+window.quizQuestions = [
     {
         id: 1,
         question: "If someone gave you ৳50,000, what would you do?",

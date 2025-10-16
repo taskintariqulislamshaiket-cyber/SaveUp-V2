@@ -83,11 +83,11 @@ function App() {
     }
 
     if (!user) {
-        return React.createElement(LoginPage, { onLoginSuccess: setUser });
+        return React.createElement(window.LoginPage, { onLoginSuccess: setUser });
     }
 
     if (showQuiz) {
-        return React.createElement(MoneyPersonalityQuiz, {
+        return React.createElement(window.MoneyPersonalityQuiz, {
             onComplete: (result) => {
                 setPersonality(result);
                 setShowQuiz(false);
@@ -105,7 +105,6 @@ function App() {
     return React.createElement(
         'div',
         { className: 'min-h-screen bg-gray-50' },
-        // Header
         React.createElement(
             'header',
             { className: 'gradient-bg text-white p-4 shadow-lg' },
@@ -133,7 +132,6 @@ function App() {
                 )
             )
         ),
-        // Navigation
         React.createElement(
             'nav',
             { className: 'bg-white shadow-md sticky top-0 z-10' },
@@ -163,11 +161,10 @@ function App() {
                 )
             )
         ),
-        // Main Content
         React.createElement(
             'main',
             { className: 'max-w-7xl mx-auto p-4 pb-20' },
-            currentPage === 'dashboard' && React.createElement(Dashboard, {
+            currentPage === 'dashboard' && React.createElement(window.Dashboard, {
                 personality,
                 thisMonthExpenses,
                 remaining,

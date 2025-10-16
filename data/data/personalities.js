@@ -1,5 +1,5 @@
-// Money Personality Types
-const personalities = {
+// Make personalities available globally
+window.personalities = {
     lion: {
         name: "Lion 🦁 - The Responsible Saver",
         description: "You're disciplined and plan ahead. Future security is your top priority.",
