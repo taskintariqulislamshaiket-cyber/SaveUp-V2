@@ -172,10 +172,24 @@ function App() {
                 healthScore,
                 expenses,
                 onAddExpense: () => setShowExpenseModal(true)
+            }),
+            currentPage === 'expenses' && React.createElement(window.ExpensesPage, {
+                expenses,
+                onAddExpense: () => setShowExpenseModal(true),
+                onDeleteExpense: (id) => setExpenses(expenses.filter(e => e.id !== id))
+            }),
+            currentPage === 'goals' && React.createElement(window.GoalsPage, {
+                goals,
+                setGoals
+            }),
+            currentPage === 'reports' && React.createElement(window.ReportsPage, {
+                expenses
             })
-        )
-    );
-}
-
-// Render App
-ReactDOM.render(React.createElement(App), document.getElementById('root'));
+        ),
+        showExpenseModal && React.createElement(window.ExpenseModal, {
+            onClose: () => setShowExpenseModal(false),
+            onSave: (expense) => {
+                setExpenses([...expenses, { ...expense, id: Date.now() }]);
+                setShowExpenseModal(false);
+            }
+        })
